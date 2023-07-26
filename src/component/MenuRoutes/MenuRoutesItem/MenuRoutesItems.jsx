@@ -1,9 +1,7 @@
 import { Menu } from "antd";
 import React, { useEffect } from "react";
 import { useDispatch } from "react-redux";
-import axios from "axios";
-
-import { setActiveStatus } from "../../../redux/slices/routesSlice";
+import { route, setActiveStatus } from "../../../redux/slices/routesSlice";
 
 const MenuRoutesItems = ({ name, active, id, coordinates }) => {
   const dispatch = useDispatch();
@@ -14,10 +12,9 @@ const MenuRoutesItems = ({ name, active, id, coordinates }) => {
         return `${coordinate.lat},${coordinate.lng}`;
       })
       .join(";");
-    const res = await axios.get(`http://router.project-osrm.org/route/v1/car/${coordinatesToString}?alternatives=true&steps=true&geometries=polyline&overview=full&annotations=true`);
-    console.log(res);
     if (id !== undefined) {
       dispatch(setActiveStatus(id));
+      dispatch(route(coordinatesToString));
     }
   };
 

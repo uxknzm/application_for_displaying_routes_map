@@ -1,22 +1,53 @@
+import React, { useEffect } from "react";
 import L from "leaflet";
-import { createControlComponent } from "@react-leaflet/core";
+import { useMap } from "react-leaflet";
+import { useSelector } from "react-redux";
+
+import { getActiveRoute } from "../../redux/slices/routesSlice";
+
 import "leaflet-routing-machine";
+import "leaflet-routing-machine/dist/leaflet-routing-machine.css";
 
-const createRoutineMachineLayer = (props) => {
-  const instance = L.Routing.control({
-    waypoints: [
-      L.latLng(59.84660399, 30.29496392),
-      L.latLng(59.82934196, 30.42423701),
-      L.latLng(59.83567701, 30.38064206)
-    ],
-    lineOptions: {
-      styles: [{ color: "#6FA1EC", weight: 4 }]
-    },
-  });
+export const RoutingMachine = () => {
+  const route = useSelector(getActiveRoute);
+  const coordinates = route?.coordinates;
 
-  return instance; 
+  const map = useMap();
+
+  useEffect(() => {
+    if (!coordinates) return;
+    if (!map) return;
+
+    const routingControl = L.Routing.control({
+      waypoints: coordinates.map((coordinate) => {
+        return L.latLng(coordinate.lat, coordinate.lng);
+      }),
+      router: new L.Routing.OSRMv1({
+        profile: "driving",
+      }),
+      lineOptions: {
+        styles: [
+          {
+            color: "#DC143C",
+            opacity: 1,
+            weight: 5,
+          },
+        ],
+        extendToWaypoints: false,
+        missingRouteTolerance: 0,
+      },
+      draggableWaypoints: false,
+      routeWhileDragging: false,
+      useZoomParameter: true,
+      fitSelectedRoutes: true,
+    }).addTo(map);
+
+    return () => {
+      map.removeControl(routingControl);
+    };
+  }, [coordinates]);
+
+  return null;
 };
-
-const RoutingMachine = createControlComponent(createRoutineMachineLayer);
 
 export default RoutingMachine;

@@ -3,10 +3,10 @@ import { useSelector } from "react-redux";
 import { getActiveRoute } from "../../redux/slices/routesSlice";
 
 const RouteActiveName = () => {
-  const name = useSelector(getActiveRoute);
+  const route = useSelector(getActiveRoute);
 
   return (
-    <strong style={{ marginLeft: 20 }}>Название маршрута: {name || "Выберите маршрут"}</strong>
+    <strong style={{ marginLeft: 20 }}>Название маршрута: {route?.name || "Выберите маршрут"}</strong>
   );
 };
 
